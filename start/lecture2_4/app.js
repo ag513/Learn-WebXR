@@ -16,7 +16,7 @@ class App{
 		this.scene.add(ambient);
         
         const light = new THREE.DirectionalLight();
-        light.position.set( 0.2, 1, 1);
+        light.position.set( 1, 1, 1);
         this.scene.add(light);
 			
 		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true } );
@@ -25,8 +25,31 @@ class App{
 		container.appendChild( this.renderer.domElement );
 		
         //Replace Box with Circle, Cone, Cylinder, Dodecahedron, Icosahedron, Octahedron, Plane, Sphere, Tetrahedron, Torus or TorusKnot
-        const geometry = new THREE.BoxBufferGeometry(); 
+        // const geometry = new THREE.CircleBufferGeometry(1,50); 
         
+        const shape = new THREE.Shape();
+        const outerR = 0.8;
+        const innerR = 0.4;
+        const PI2 = Math.PI * 2;
+        const inc = PI2/10;
+        
+        shape.moveTo(outerR, 0);
+        let inner = true;
+
+        for(let theta = inc; theta<PI2; theta+=inc){
+            const radius = (inner) ? innerR : outerR;
+            shape.lineTo(Math.cos(theta)*radius, Math.sin(theta)*radius);
+            inner = !inner; 
+        }
+
+        const extrudeSettings = {
+            steps:1,
+            depth:1,
+            bevelEnabled:false
+        }
+
+        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings)
+
         const material = new THREE.MeshStandardMaterial( { color: 0xFF0000 });
 
         this.mesh = new THREE.Mesh( geometry, material );
